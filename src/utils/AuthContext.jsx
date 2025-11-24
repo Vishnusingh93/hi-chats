@@ -9,7 +9,10 @@ export const AuthProvider = ({children}) =>{
 
      const [loading, setLoading] = useState(true);
      const [user, setUser] = useState(null);
-     const navigate =useNavigate()
+     const navigate = useNavigate()
+     const [loginError, setLoginError] = useState('')
+     const [registerError, setRegisterError] = useState("");
+     
 
 
      useEffect(() =>{
@@ -20,7 +23,7 @@ export const AuthProvider = ({children}) =>{
      const getUserOnLoad = async () =>{
         try {
               const accountDetails = await account.get();
-              console.log('accountDetails:', accountDetails);
+              // console.log('accountDetails:', accountDetails);
                 setUser(accountDetails)
             
         } catch (error) {
@@ -31,7 +34,9 @@ export const AuthProvider = ({children}) =>{
      }
 
      const handleUserLogin = async (e, credentials) =>{
-            e.preventDefault()
+ 
+            e.preventDefault();
+                 setLoginError('');
 
             try {
                 const response = await account.createEmailPasswordSession(credentials.email, credentials.password);
@@ -43,8 +48,8 @@ export const AuthProvider = ({children}) =>{
                  
 
             } catch (error) {
-            console.log('eroor:', error);
-            
+            console.log('error:', error);
+             setLoginError("Invalid email or password!");
               
                 
             }
@@ -56,10 +61,13 @@ export const AuthProvider = ({children}) =>{
      }
 
      const handleUserRegister = async(e, credentials) =>{
-        e.preventDefault()
+      e.preventDefault();
+setRegisterError('');
+
+
 
         if (credentials.password1 !== credentials.password2) {
-          alert('Password do not match')
+          setRegisterError('Password do not match')
           return  
         }
         try {
@@ -70,18 +78,19 @@ export const AuthProvider = ({children}) =>{
                 credentials.name
 
         )
+        
         await account.createEmailPasswordSession(credentials.email, credentials.password1)
         const accountDetails = await account.get();
-        console.log('accountDetails:', accountDetails);
+        // console.log('accountDetails:', accountDetails);
         setUser(accountDetails)
         navigate('/')
 
-        console.log('REFISTERD', response);
+        // console.log('REFISTERD', response);
         
             
         } catch (error) {
-         console.log('error:', error);
-            
+        //  console.log('error:', error);
+            setRegisterError(error.message || "Invalid registration details");
         }
      }
 
@@ -89,7 +98,9 @@ export const AuthProvider = ({children}) =>{
         user,
         handleUserLogin,
         handleUserLogout,
-        handleUserRegister
+        handleUserRegister,
+        loginError,
+        registerError,
     }
 
     return (

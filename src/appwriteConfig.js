@@ -11,6 +11,7 @@ export const COLLECTION_ID_MESSAGES="6856eda1001b54f7bf78"
 export const BUCKET_ID="6912dd540005110ed6d0"
 
 
+
 const client = new Client();
 client
 

@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom'
 
 const Registerpage = () => {
 
-     const { handleUserRegister} = useAuth()
+     const { handleUserRegister, registerError } = useAuth();
+
      const [ credentials, setCredentials] = useState({
             name:'',
             email:'',
@@ -25,6 +26,7 @@ const Registerpage = () => {
                 // e.preventDefault()
                 handleUserRegister(e,credentials)}}>
             <p>Login Form</p>
+               
                      <div className='field--wrapper'>
                 <label >Name:</label>
                 <input type="text"
@@ -41,10 +43,12 @@ const Registerpage = () => {
                 <input type="email"
                 required
                 name='email'
+                
                 placeholder='Enter your email...' 
                 value={credentials.email}
                 onChange={handleInputChange}
                 />
+                
                 </div>
                 <div className='field--wrapper'>
                 <label >Password:</label>
@@ -56,6 +60,11 @@ const Registerpage = () => {
                 value={credentials.password1}
                  onChange={handleInputChange}
                   />
+                        {registerError && (
+                <p style={{color: "red", marginBottom: "10px"}}>
+                    {registerError}
+                </p>
+            )}
                 
             </div>
 
@@ -68,6 +77,11 @@ const Registerpage = () => {
                 value={credentials.password2}
                  onChange={handleInputChange}
                   />
+                    {registerError && (
+                <p style={{color: "red", marginBottom: "10px"}}>
+                    {registerError}
+                </p>
+            )}
                 
             </div>
              <div className='field--wrapper'>

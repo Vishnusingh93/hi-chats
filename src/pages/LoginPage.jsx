@@ -3,7 +3,7 @@ import { useAuth } from '../utils/AuthContext'
 import { useNavigate,Link } from 'react-router-dom'
 
 const LoginPage = () => {
-     const {user, handleUserLogin} = useAuth()
+     const {user, handleUserLogin, loginError} = useAuth()
      const navigate = useNavigate()
 
      const [ credentials, setCredentials] = useState({
@@ -36,6 +36,8 @@ const LoginPage = () => {
                  e.preventDefault()
                 handleUserLogin(e,credentials)}}>
             <p>Login Form</p>
+           
+ 
             <div className='field--wrapper'>
                 <label >Email:</label>
                 <input type="email"
@@ -45,7 +47,12 @@ const LoginPage = () => {
                 value={credentials.email}
                 onChange={handleInputChange}
                 />
-                </div>
+                           {loginError && (
+        <p style={{ color: "red", marginBottom: "10px" }}>
+        {loginError}
+      </p>
+    )}
+                 </div>
                 <div className='field--wrapper'>
                 <label >Password:</label>
                 <input type="password"
@@ -55,6 +62,11 @@ const LoginPage = () => {
                 value={credentials.password}
                  onChange={handleInputChange}
                   />
+                    {loginError && (
+         <p style={{ color: "red", marginBottom: "10px" }}>
+        {loginError}
+        </p>
+        )}
                 
             </div>
              <div className='field--wrapper'>
@@ -62,6 +74,7 @@ const LoginPage = () => {
                 value='Login' />
 
             </div>
+            
         </form>
 
         <p>Dont have an account? Register <Link to='/register'>here</Link></p>

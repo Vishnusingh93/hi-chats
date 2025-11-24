@@ -7,6 +7,9 @@ import Header from '../components/Header'
 import { useAuth } from '../utils/AuthContext'
 import { GrGallery } from "react-icons/gr";
 
+import EmojiPicker from "emoji-picker-react";
+import { FaSmile } from "react-icons/fa";
+
 
 const Room = () => {
 
@@ -17,6 +20,9 @@ const Room = () => {
     const messageEndRf = React.useRef(null)
     const isAtBottomRef = useRef(true)
     const [ selectedFile,setSelectedFile] = useState(null)
+
+const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
 
          { messages.videoUrl ? (
   <video controls className='chat-video'>
@@ -43,21 +49,21 @@ const Room = () => {
     
     getMessages()
 
-     const unsubcribe =  client.subscribe(`databases.${DATABASE_ID}.collections.${COLLECTION_ID_MESSAGES}.documents`, response =>{
+     const unsubscribe =  client.subscribe(`databases.${DATABASE_ID}.collections.${COLLECTION_ID_MESSAGES}.documents`, response =>{
       
        if (response.events.includes("databases.*.collections.*.documents.*.create")) {
-            console.log("A MESSAGE WAS CREATED"); 
+            // console.log("A MESSAGE WAS CREATED"); 
              setMessages(prevState=>[...prevState, response.payload ])
      }
       if (response.events.includes("databases.*.collections.*.documents.*.delete")) {
-            console.log("A MESSAGE WAS Deleted"); 
+            // console.log("A MESSAGE WAS Deleted"); 
             setMessages(prevState => prevState.filter(message => message.$id !== response.payload.$id))
      }
     
     
   });
   return () =>{
-    unsubcribe()
+    unsubscribe()
     box.removeEventListener("scroll", handleScroll)
   }
 
@@ -74,7 +80,8 @@ useEffect(()=>{
 
 // Send message
 const handleSubmit = async (e) =>{
-  e.preventDefault()
+  e.preventDefault();
+    setShowEmojiPicker(false); 
 
 try{
   let fileUrl = null;
@@ -122,7 +129,7 @@ try{
     Query.limit(100)
   ]
       )
-    console.log( response.documents);
+    // console.log( response.documents);
     setMessages(response.documents)
     
   }
@@ -136,10 +143,9 @@ try{
 
   return(
    <div className='container'>
+  
         <Header/>
-        <div  className='room--container'>
-            
-          
+        <div  className='room--container'>         
       <div id='messagesBox' className='messages-list'>
        
         {messages.map(message =>(
@@ -152,8 +158,7 @@ try{
                 >
                  <div 
                 className={`message--body ${message.fileUrl ? "media-message" : ""} ${message.user_id === user.$id ? "own-message--body":""}`}>
-           
-        
+
 
                 {message.fileUrl ? (
   message.fileType?.startsWith("video/") ? (
@@ -162,16 +167,16 @@ try{
       <source src={message.fileUrl} type={message.fileType}/>
     </video>
 
-  ) : message.fileType?.startsWith("audio/") ? (
+     ) : message.fileType?.startsWith("audio/") ? (
     <audio controls style={{width: "250px"}}>
       <source src={message.fileUrl} type={message.fileType}/>
     </audio>
-  ):(
+     ):(
     <img src={message.fileUrl} width="250" alt="uploaded"/>
-  )
-) : (
-  <span>{message.body}</span>
-)}
+   )
+   ) : (
+     <span>{message.body}</span>
+   )}
 
                 </div>
                 <div className='message--header'>
@@ -201,14 +206,41 @@ try{
 
                  <form onSubmit={handleSubmit} className='message--form'>
                 <div>
-                    <textarea
-                    required= {!selectedFile}
-                    maxLength='1000'
-                    placeholder='Say something...'
-                    onChange={(e) =>{setMessageBody(e.target.value)}}
-                    value={messageBody}
-                    
-                    ></textarea>
+                  <div className="emoji-wrapper"  style={{ position: "relative" }}>
+    <FaSmile
+        size={25}
+        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+        style={{ cursor: "pointer", marginRight: "10px" }}
+      
+    />
+
+    {showEmojiPicker && (
+        <div style={{ position: "absolute", bottom: "20px", right: "80px" }}>
+            <EmojiPicker
+                onEmojiClick={(emojiObj) => {
+                    setMessageBody(prev => prev + emojiObj.emoji);
+                    setShowEmojiPicker(true)
+                }}
+            />
+        </div>
+       
+    )}
+</div>
+
+                   
+
+  <textarea
+  className="text-message"
+  required={!selectedFile}
+  placeholder="Say something..."
+  onChange={(e) => {
+    setMessageBody(e.target.value);
+    e.target.style.height = "auto";        // reset height
+    e.target.style.height = e.target.scrollHeight + "px"; // auto expand
+  }}
+  value={messageBody}
+  rows={1}
+/>
                 </div>
                 
                     <input 
@@ -234,6 +266,7 @@ try{
                 </div>
 
                 </form>
+                
       </div>
        
     </div>
