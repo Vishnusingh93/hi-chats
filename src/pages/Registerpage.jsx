@@ -32,6 +32,8 @@ const Registerpage = () => {
                 <input type="text"
                 required
                 name='name'
+                 minLength={3}
+                 maxLength={15}
                 placeholder='Enter your name...' 
                 value={credentials.name}
                 onChange={handleInputChange}
@@ -59,6 +61,8 @@ const Registerpage = () => {
                 placeholder='Enter password...'
                 value={credentials.password1}
                  onChange={handleInputChange}
+                   minLength={6}
+                   maxLength={15}
                   />
                         {registerError && (
                 <p style={{color: "red", marginBottom: "10px"}}>
@@ -71,6 +75,8 @@ const Registerpage = () => {
                <div className='field--wrapper'>
                 <label > Confirm Password:</label>
                 <input type="password"
+                  minLength={8}
+                 maxLength={15}
                 required
                 name='password2'
                 placeholder='Confirm your password...'
